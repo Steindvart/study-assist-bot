@@ -53,5 +53,5 @@ class Config:
 config: Config = Config()
 
 src_dir = os.path.dirname(os.path.abspath(__file__))
-content_dir = os.path.join(src_dir, '../content')
-config.initialize_sections(content_dir)
+tests_dir = os.path.join(src_dir, '../content/tests')
+config.initialize_sections(tests_dir)
