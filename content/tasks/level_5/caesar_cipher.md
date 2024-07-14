@@ -20,14 +20,14 @@ $$x = character + (shift \bmod alphabet)$$
 
 | Входные данные        | Содержимое файла               | Выходные данные                |
 |-----------------------|--------------------------------|--------------------------------|
-| `1.txt 1`          | `abcdefABCDEF`                 | `bcdefgBCDEFG`                 |
-| `1.txt 3`          | `abcdefABCDEF`                 | `defghiDEFGHI`                 |
-| `1.txt -1`         | `abcdefABCDEF`                 | `zabcdeZABCDE`                 |
-| `2.txt 1`          | `a-b1c3d*e)1fhghn fDFDbK01234` | `b-c1d3e*f)1gihio gEGEcL01234` |
-| `2.txt 55`         | `a-b1c3d*e)1fhghn fDFDbK01234` | `d-e1f3g*h)1ikjkq iGIGeN01234` |
-| `3.txt 10`         | `z-y-x a-b-c Z-Y-X A-B-C`      | `j-i-h k-l-m J-I-H K-L-M`      |
-| `3.txt 1`          | `z-y-x a-b-c Z-Y-X A-B-C`      | `a-z-y b-c-d A-Z-Y B-C-D`      |
-| `3.txt -1`         | `z-y-x a-b-c Z-Y-X A-B-C`      | `y-x-w z-a-b Y-X-W Z-A-B`      |
+| `1.txt 1`             | `abcdefABCDEF`                 | `bcdefgBCDEFG`                 |
+| `1.txt 3`             | `abcdefABCDEF`                 | `defghiDEFGHI`                 |
+| `1.txt -1`            | `abcdefABCDEF`                 | `zabcdeZABCDE`                 |
+| `2.txt 1`             | `a-b1c3d*e)1fhghn fDFDbK01234` | `b-c1d3e*f)1gihio gEGEcL01234` |
+| `2.txt 55`            | `a-b1c3d*e)1fhghn fDFDbK01234` | `d-e1f3g*h)1ikjkq iGIGeN01234` |
+| `3.txt 10`            | `z-y-x a-b-c Z-Y-X A-B-C`      | `j-i-h k-l-m J-I-H K-L-M`      |
+| `3.txt 1`             | `z-y-x a-b-c Z-Y-X A-B-C`      | `a-z-y b-c-d A-Z-Y B-C-D`      |
+| `3.txt -1`            | `z-y-x a-b-c Z-Y-X A-B-C`      | `y-x-w z-a-b Y-X-W Z-A-B`      |
 
 Эта таблица демонстрирует различные входные значения, содержимое файлов и соответствующие результаты программы.
 
