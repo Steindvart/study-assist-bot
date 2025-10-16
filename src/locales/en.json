@@ -1,0 +1,22 @@
+{
+  "welcome_message": "Welcome to the Study Assist Bot! How can I help you today?",
+  "section_prompt": "Please select a section to begin your study.",
+  "topic_prompt": "Choose a topic to explore.",
+  "test_start": "You are about to start a test. Good luck!",
+  "test_completed": "Test completed! Your results will be processed.",
+  "correct_answer": "Correct! Well done.",
+  "incorrect_answer": "Incorrect. The correct answer was: {{correct_answer}}.",
+  "explanation": "Explanation: {{explanation}}",
+  "user_stats": {
+    "total_tests": "Total tests taken: {{total}}",
+    "average_score": "Average score: {{average}}"
+  },
+  "localization": {
+    "language_selection": "Select your preferred language.",
+    "language_changed": "Language changed to {{language}}."
+  },
+  "error_messages": {
+    "invalid_command": "Sorry, I didn't understand that command.",
+    "session_timeout": "Your session has timed out. Please start again."
+  }
+}
