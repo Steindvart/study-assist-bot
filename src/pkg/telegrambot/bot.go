@@ -3,7 +3,6 @@ package telegrambot
 import (
 	"context"
 	"log"
-	"log/slog"
 
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
@@ -82,9 +81,9 @@ func defaultHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 		return
 	}
 
-	slog.Info("Received message",
-		"user_id", update.Message.From.ID,
-		"text", update.Message.Text,
-		"chat_id", update.Message.Chat.ID,
+	log.Printf("Received message from user %d in chat %d: %s",
+		update.Message.From.ID,
+		update.Message.Chat.ID,
+		update.Message.Text,
 	)
 }

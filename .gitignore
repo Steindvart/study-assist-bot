@@ -1,10 +1,21 @@
-# Python
-__pycache__/
-venv/
-
 # VSCode
 .vs/
 .vscode/
+
+# Executables
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+/src/bot
+
+# Tests
+*.test
+*.out
+
+# Go
+go.work
 
 # Security sensitive
 .env

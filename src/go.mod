@@ -1,8 +1,8 @@
 module study-assist-bot-go
 
-go 1.21
+go 1.25
 
 require (
-	github.com/go-telegram/bot v1.0.0
-	github.com/mattn/go-sqlite3 v1.14.6
+	github.com/go-telegram/bot v1.17.0
+	github.com/joho/godotenv v1.5.1
 )

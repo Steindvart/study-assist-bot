@@ -1,52 +1,60 @@
-# README for Study Assist Bot in Go
+# Study Assist Bot (Go Migration)
 
 ## Overview
 
-The Study Assist Bot is a Telegram bot designed to help users learn and test their knowledge on various topics. This bot is built using Go and the go-telegram/bot library, providing a robust and efficient solution for conducting tests, tracking user statistics, and offering multilingual support.
+The Study Assist Bot is a Telegram bot designed to help users learn and test their knowledge on various topics. This project is a **migration from Python (aiogram) to Go** using the [go-telegram/bot](https://github.com/go-telegram/bot) library.
 
-## Project Structure
+## Current Status
 
-The project is organized into several directories, each serving a specific purpose:
+✅ **Phase 1: Basic Bot Setup** - COMPLETED
+- Project structure created
+- Bot initialization with go-telegram/bot
+- Configuration management with environment variables
+- Graceful shutdown handling
 
-- **cmd/bot**: Contains the entry point of the application.
-- **internal**: Holds the core logic of the bot, including configuration, controllers, models, repository, services, utilities, and views.
-- **pkg**: Contains reusable packages, such as the Telegram bot interface.
-- **locales**: Contains localization files for multilingual support.
-- **scripts**: Includes scripts for database migration.
-- **go.mod** and **go.sum**: Manage dependencies for the Go module.
+⏳ **Phase 2: Core Functionality** - IN PROGRESS
+- Command handlers
+- Testing system
+- User statistics
+- Multilingual support
 
-## Features
-
-- **Section Management**: Users can interact with different sections of content.
-- **Testing Functionality**: Conduct tests by sections and topics, track user progress, and provide feedback.
-- **User Statistics**: Track user performance and statistics related to their interactions with the bot.
-- **Explanations**: Provide detailed explanations for questions to enhance learning.
-- **Multilingual Support**: Support for multiple languages, allowing users to interact in their preferred language.
-
-## Getting Started
+## Quick Start
 
 ### Prerequisites
 
-- Go 1.18 or higher
-- A Telegram bot token (create a bot using [BotFather](https://core.telegram.org/bots#botfather))
-- A database (e.g., SQLite, PostgreSQL) for storing user data and statistics
+- Go 1.21 or higher
+- A Telegram bot token (get from [@BotFather](https://t.me/botfather))
 
-### Installation
+### Installation & Running
 
-1. Clone the repository:
-
-   ```
-   git clone <repository-url>
-   cd study-assist-bot-go
+1. **Clone and navigate to the project:**
+   ```bash
+   cd src
    ```
 
-2. Install dependencies:
-
+2. **Install dependencies:**
+   ```bash
+   go mod download
    ```
-   go mod tidy
+
+3. **Configure environment:**
+   ```bash
+   cp .env.example .env
+   # Edit .env and add your TELEGRAM_BOT_TOKEN
    ```
 
-3. Set up your environment variables or configuration file for the bot token and database connection.
+4. **Run the bot:**
+   ```bash
+   # Option 1: Direct run
+   go run ./cmd/bot
+
+   # Option 2: Build and run
+   go build -o bot ./cmd/bot
+   ./bot
+   ```
+
+5. **Stop the bot:**
+   Press `Ctrl+C` for graceful shutdown
 
 ### Running the Bot
 
