@@ -25,8 +25,8 @@ func main() {
 	}
 
 	// Создаем контекст с возможностью отмены
-	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
-	defer cancel()
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
 
 	log.Println("Bot is starting...")
 
