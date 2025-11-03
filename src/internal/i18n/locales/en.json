@@ -1,0 +1,59 @@
+{
+  "welcome_message": {
+    "description": "Welcome message shown when user starts the bot",
+    "other": "Welcome to the Study Assist Bot! How can I help you today?"
+  },
+  "help_message": {
+    "description": "Help information for users",
+    "other": "You can ask questions about topics or take tests. Just choose an option from the menu."
+  },
+  "section_prompt": {
+    "description": "Prompt to select a study section",
+    "other": "Please select a section to begin your study."
+  },
+  "topic_prompt": {
+    "description": "Prompt to choose a topic",
+    "other": "Choose a topic to explore."
+  },
+  "test_start": {
+    "description": "Message when starting a test",
+    "other": "You are about to start a test. Good luck!"
+  },
+  "test_completed": {
+    "description": "Message when test is completed",
+    "other": "Test completed! Your score: {{.Score}} out of {{.Total}}."
+  },
+  "correct_answer": {
+    "description": "Message for correct answer",
+    "other": "Correct! Well done."
+  },
+  "incorrect_answer": {
+    "description": "Message for incorrect answer",
+    "other": "Incorrect. The correct answer was: {{.CorrectAnswer}}."
+  },
+  "explanation": {
+    "description": "Explanation label",
+    "other": "Explanation: {{.Text}}"
+  },
+  "invalid_command": {
+    "description": "Error message for invalid commands",
+    "other": "Sorry, I didn't understand that command."
+  },
+  "session_timeout": {
+    "description": "Error message for session timeout",
+    "other": "Your session has timed out. Please start again."
+  },
+  "language_selection": {
+    "description": "Prompt to select language",
+    "other": "Select your preferred language."
+  },
+  "language_changed": {
+    "description": "Confirmation of language change",
+    "other": "Language changed to {{.Language}}."
+  },
+  "tests_passed_plural": {
+    "description": "Plural message for number of tests passed",
+    "one": "{{.Count}} test passed",
+    "other": "{{.Count}} tests passed"
+  }
+}

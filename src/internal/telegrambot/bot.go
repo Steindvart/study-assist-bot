@@ -3,6 +3,7 @@ package telegrambot
 import (
 	"context"
 	"log"
+	"study-assist-tgbot/internal/i18n"
 	"study-assist-tgbot/internal/telegrambot/handlers"
 	"study-assist-tgbot/internal/telegrambot/middlewares"
 
@@ -10,30 +11,46 @@ import (
 )
 
 type Bot struct {
-	api *bot.Bot
+	api         *bot.Bot
+	i18nService *i18n.Service
 }
 
-func NewBot(token string) (*Bot, error) {
+type Config struct {
+	Token       string
+	I18nService *i18n.Service
+}
+
+func NewBot(cfg Config) (*Bot, error) {
+	i18nMiddleware := middlewares.NewI18nMiddleware(cfg.I18nService)
+
 	opts := []bot.Option{
-		bot.WithMiddlewares(middlewares.LogMessageWithText),
+		bot.WithMiddlewares(i18nMiddleware.Handler, middlewares.LogMessageWithText),
+
 		bot.WithMessageTextHandler("start", bot.MatchTypeCommand, handlers.CommandStart),
-		bot.WithMessageTextHandler("help", bot.MatchTypeCommandStartOnly, handlers.CommandHelp),
+		bot.WithMessageTextHandler("help", bot.MatchTypeCommand, handlers.CommandHelp),
+		bot.WithMessageTextHandler("lang", bot.MatchTypeCommand, handlers.CommandLanguage),
+		bot.WithMessageTextHandler("test", bot.MatchTypeCommand, handlers.CommandTest),
+
+		bot.WithCallbackQueryDataHandler("set_lang_", bot.MatchTypePrefix, handlers.HandleLanguageCallback),
+
 		bot.WithDefaultHandler(handlers.Echo),
 	}
 
-	b, err := bot.New(token, opts...)
+	b, err := bot.New(cfg.Token, opts...)
 	if err != nil {
 		return nil, err
 	}
 
 	return &Bot{
-		api: b,
+		api:         b,
+		i18nService: cfg.I18nService,
 	}, nil
 }
 
 // Start запускает бота в polling режиме
 func (b *Bot) Start(ctx context.Context) error {
 	log.Println("Starting Telegram bot...")
+	log.Printf("Supported languages: %v", b.i18nService.SupportedLanguages())
 
 	b.api.Start(ctx)
 
