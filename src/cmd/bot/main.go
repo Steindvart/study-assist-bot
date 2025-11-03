@@ -8,7 +8,7 @@ import (
 	"syscall"
 
 	"study-assist-bot-go/internal/config"
-	"study-assist-bot-go/pkg/telegrambot"
+	"study-assist-bot-go/internal/telegrambot"
 )
 
 func main() {
