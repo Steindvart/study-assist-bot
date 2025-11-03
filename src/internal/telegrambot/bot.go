@@ -3,7 +3,7 @@ package telegrambot
 import (
 	"context"
 	"log"
-	"study-assist-tgbot/internal/i18n"
+	"study-assist-tgbot/internal/localization"
 	"study-assist-tgbot/internal/telegrambot/handlers"
 	"study-assist-tgbot/internal/telegrambot/middlewares"
 
@@ -12,16 +12,16 @@ import (
 
 type Bot struct {
 	api         *bot.Bot
-	i18nService *i18n.Service
+	i18nService *localization.Service
 }
 
 type Config struct {
 	Token       string
-	I18nService *i18n.Service
+	I18nService *localization.Service
 }
 
 func NewBot(cfg Config) (*Bot, error) {
-	i18nMiddleware := middlewares.NewI18nMiddleware(cfg.I18nService)
+	i18nMiddleware := middlewares.NewLocalizationMiddleware(cfg.I18nService)
 
 	opts := []bot.Option{
 		bot.WithMiddlewares(i18nMiddleware.Handler, middlewares.LogMessageWithText),

@@ -8,7 +8,7 @@ import (
 	"syscall"
 
 	"study-assist-tgbot/internal/config"
-	"study-assist-tgbot/internal/i18n"
+	"study-assist-tgbot/internal/localization"
 	"study-assist-tgbot/internal/telegrambot"
 )
 
@@ -18,7 +18,7 @@ func main() {
 		log.Fatalf("Failed to load config: %v", err)
 	}
 
-	i18nService, err := i18n.NewService(i18n.Config{
+	i18nService, err := localization.NewService(localization.Config{
 		DefaultLanguage:  "ru",                 // Основной язык
 		FallbackLanguage: "en",                 // Fallback язык
 		SupportedLangs:   []string{"ru", "en"}, // Поддерживаемые языки

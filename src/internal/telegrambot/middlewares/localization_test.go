@@ -4,15 +4,15 @@ import (
 	"context"
 	"testing"
 
-	"study-assist-tgbot/internal/i18n"
+	"study-assist-tgbot/internal/localization"
 
 	"github.com/go-telegram/bot/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func TestI18nMiddleware_getUserLanguage(t *testing.T) {
-	service, err := i18n.NewService(i18n.Config{
+func TestLocalizationMiddleware_getUserLanguage(t *testing.T) {
+	service, err := localization.NewService(localization.Config{
 		DefaultLanguage:  "en",
 		FallbackLanguage: "en",
 		SupportedLangs:   []string{"en", "ru"},
@@ -20,7 +20,7 @@ func TestI18nMiddleware_getUserLanguage(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	middleware := NewI18nMiddleware(service)
+	middleware := NewLocalizationMiddleware(service)
 
 	tests := []struct {
 		name     string
@@ -86,8 +86,8 @@ func TestI18nMiddleware_getUserLanguage(t *testing.T) {
 	}
 }
 
-func TestI18nMiddleware_normalizeLanguageCode(t *testing.T) {
-	service, err := i18n.NewService(i18n.Config{
+func TestlocalizationMiddleware_normalizeLanguageCode(t *testing.T) {
+	service, err := localization.NewService(localization.Config{
 		DefaultLanguage:  "en",
 		FallbackLanguage: "en",
 		SupportedLangs:   []string{"en", "ru"},
@@ -95,7 +95,7 @@ func TestI18nMiddleware_normalizeLanguageCode(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	middleware := NewI18nMiddleware(service)
+	middleware := NewLocalizationMiddleware(service)
 
 	tests := []struct {
 		name     string
@@ -143,7 +143,7 @@ func TestI18nMiddleware_normalizeLanguageCode(t *testing.T) {
 }
 
 func TestGetMessage(t *testing.T) {
-	service, err := i18n.NewService(i18n.Config{
+	service, err := localization.NewService(localization.Config{
 		DefaultLanguage:  "en",
 		FallbackLanguage: "en",
 		SupportedLangs:   []string{"en", "ru"},
@@ -153,7 +153,7 @@ func TestGetMessage(t *testing.T) {
 
 	// Тест с локализатором в контексте
 	localizer := service.GetLocalizer("en")
-	ctx := i18n.WithLocalizer(context.Background(), localizer)
+	ctx := localization.WithLocalizer(context.Background(), localizer)
 
 	tests := []struct {
 		name         string
@@ -193,7 +193,7 @@ func TestGetMessage(t *testing.T) {
 }
 
 func TestGetSimpleMessage(t *testing.T) {
-	service, err := i18n.NewService(i18n.Config{
+	service, err := localization.NewService(localization.Config{
 		DefaultLanguage:  "en",
 		FallbackLanguage: "en",
 		SupportedLangs:   []string{"en", "ru"},
@@ -202,7 +202,7 @@ func TestGetSimpleMessage(t *testing.T) {
 	require.NoError(t, err)
 
 	localizer := service.GetLocalizer("en")
-	ctx := i18n.WithLocalizer(context.Background(), localizer)
+	ctx := localization.WithLocalizer(context.Background(), localizer)
 
 	result := GetSimpleMessage(ctx, "welcome_message")
 	assert.NotEmpty(t, result)
@@ -213,7 +213,7 @@ func TestGetSimpleMessage(t *testing.T) {
 }
 
 func TestGetPluralMessage(t *testing.T) {
-	service, err := i18n.NewService(i18n.Config{
+	service, err := localization.NewService(localization.Config{
 		DefaultLanguage:  "en",
 		FallbackLanguage: "en",
 		SupportedLangs:   []string{"en", "ru"},
@@ -222,7 +222,7 @@ func TestGetPluralMessage(t *testing.T) {
 	require.NoError(t, err)
 
 	localizer := service.GetLocalizer("en")
-	ctx := i18n.WithLocalizer(context.Background(), localizer)
+	ctx := localization.WithLocalizer(context.Background(), localizer)
 
 	result := GetPluralMessage(ctx, "tests_passed_plural", 5, nil)
 	assert.NotEmpty(t, result)
