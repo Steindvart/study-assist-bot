@@ -7,8 +7,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"study-assist-bot-go/internal/config"
-	"study-assist-bot-go/internal/telegrambot"
+	"study-assist-tgbot/internal/config"
+	"study-assist-tgbot/internal/telegrambot"
 )
 
 func main() {

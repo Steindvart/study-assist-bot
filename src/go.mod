@@ -1,4 +1,4 @@
-module study-assist-bot-go
+module study-assist-tgbot
 
 go 1.25
 
