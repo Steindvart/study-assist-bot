@@ -8,12 +8,18 @@ import (
 	"github.com/go-telegram/bot/models"
 )
 
-func LogMessage(next bot.HandlerFunc) bot.HandlerFunc {
+func LogMessageWithText(next bot.HandlerFunc) bot.HandlerFunc {
 	return func(ctx context.Context, b *bot.Bot, update *models.Update) {
 		if update.Message != nil {
-			log.Printf("Received message from user %d in chat %d: %s",
+			if update.Message.Text == "" {
+				return
+			}
+
+			log.Printf("Received message from user %d (%s) in chat %d (%s): %s",
 				update.Message.From.ID,
+				update.Message.From.Username,
 				update.Message.Chat.ID,
+				update.Message.Chat.Username,
 				update.Message.Text,
 			)
 		}

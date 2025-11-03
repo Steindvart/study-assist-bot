@@ -15,7 +15,7 @@ type Bot struct {
 
 func NewBot(token string) (*Bot, error) {
 	opts := []bot.Option{
-		bot.WithMiddlewares(middlewares.LogMessage),
+		bot.WithMiddlewares(middlewares.LogMessageWithText),
 		bot.WithDefaultHandler(handlers.Echo),
 	}
 
