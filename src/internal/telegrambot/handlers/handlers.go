@@ -9,13 +9,11 @@ import (
 	"github.com/go-telegram/bot/models"
 )
 
-// Echo обработчик для эхо-сообщений с локализацией
 func Echo(ctx context.Context, b *bot.Bot, update *models.Update) {
 	if update.Message == nil {
 		return
 	}
 
-	// Используем локализованное сообщение для эхо
 	echoText := fmt.Sprintf("Echo: %s", update.Message.Text)
 
 	b.SendMessage(ctx, &bot.SendMessageParams{
@@ -24,13 +22,11 @@ func Echo(ctx context.Context, b *bot.Bot, update *models.Update) {
 	})
 }
 
-// CommandStart обработчик команды /start с локализацией
 func CommandStart(ctx context.Context, b *bot.Bot, update *models.Update) {
 	if update.Message == nil {
 		return
 	}
 
-	// Получаем локализованное приветствие
 	welcomeText := localization.GetSimpleText(ctx, "welcome_message")
 
 	b.SendMessage(ctx, &bot.SendMessageParams{
@@ -39,13 +35,11 @@ func CommandStart(ctx context.Context, b *bot.Bot, update *models.Update) {
 	})
 }
 
-// CommandHelp обработчик команды /help с локализацией
 func CommandHelp(ctx context.Context, b *bot.Bot, update *models.Update) {
 	if update.Message == nil {
 		return
 	}
 
-	// Получаем локализованную справку
 	helpText := localization.GetSimpleText(ctx, "help_message")
 
 	b.SendMessage(ctx, &bot.SendMessageParams{
@@ -54,13 +48,11 @@ func CommandHelp(ctx context.Context, b *bot.Bot, update *models.Update) {
 	})
 }
 
-// CommandLanguage обработчик команды /lang для смены языка
 func CommandLanguage(ctx context.Context, b *bot.Bot, update *models.Update) {
 	if update.Message == nil {
 		return
 	}
 
-	// Создаём inline клавиатуру для выбора языка
 	keyboard := models.InlineKeyboardMarkup{
 		InlineKeyboard: [][]models.InlineKeyboardButton{
 			{
@@ -76,7 +68,6 @@ func CommandLanguage(ctx context.Context, b *bot.Bot, update *models.Update) {
 		},
 	}
 
-	// Получаем локализованное сообщение выбора языка
 	selectText := localization.GetSimpleText(ctx, "language_selection")
 
 	b.SendMessage(ctx, &bot.SendMessageParams{
@@ -86,7 +77,6 @@ func CommandLanguage(ctx context.Context, b *bot.Bot, update *models.Update) {
 	})
 }
 
-// HandleLanguageCallback обработчик callback для смены языка
 func HandleLanguageCallback(ctx context.Context, b *bot.Bot, update *models.Update) {
 	if update.CallbackQuery == nil {
 		return
@@ -103,19 +93,16 @@ func HandleLanguageCallback(ctx context.Context, b *bot.Bot, update *models.Upda
 		return
 	}
 
-	// Получаем локализованное сообщение подтверждения
 	confirmText := localization.GetText(ctx, "language_changed", map[string]interface{}{
 		"Language": langName,
 	})
 
-	// Отвечаем на callback query
 	b.AnswerCallbackQuery(ctx, &bot.AnswerCallbackQueryParams{
 		CallbackQueryID: update.CallbackQuery.ID,
 		Text:            confirmText,
 		ShowAlert:       false,
 	})
 
-	// Обновляем сообщение
 	b.EditMessageText(ctx, &bot.EditMessageTextParams{
 		ChatID:    update.CallbackQuery.Message.Message.Chat.ID,
 		MessageID: update.CallbackQuery.Message.Message.ID,
@@ -126,7 +113,6 @@ func HandleLanguageCallback(ctx context.Context, b *bot.Bot, update *models.Upda
 	// для персистентности между сессиями
 }
 
-// CommandTest демонстрационный обработчик для тестирования с плюрализацией
 func CommandTest(ctx context.Context, b *bot.Bot, update *models.Update) {
 	if update.Message == nil {
 		return

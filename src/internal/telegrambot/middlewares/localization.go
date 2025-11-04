@@ -22,13 +22,8 @@ func NewLocalization(service *localization.Service) *Localization {
 
 func (m *Localization) Handler(next bot.HandlerFunc) bot.HandlerFunc {
 	return func(ctx context.Context, b *bot.Bot, update *models.Update) {
-		// Определяем язык пользователя
 		userLang := m.getUserLanguage(update)
-
-		// Получаем соответствующий локализатор
 		localizer := m.service.GetLocalizer(userLang)
-
-		// Обогащаем контекст локализатором
 		ctx = localization.WithLocalizer(ctx, localizer)
 
 		next(ctx, b, update)

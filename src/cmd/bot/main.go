@@ -18,7 +18,7 @@ func main() {
 		log.Fatalf("Failed to load config: %v", err)
 	}
 
-	localizationService, err := localization.NewService(localization.Config{
+	localizationService, err := localization.NewService(localization.ServiceConfig{
 		DefaultLanguage:  "ru",
 		FallbackLanguage: "en",
 		SupportedLangs:   []string{"ru", "en"},
