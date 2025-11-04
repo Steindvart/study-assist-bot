@@ -5,6 +5,7 @@ import (
 	"embed"
 	"encoding/json"
 	"fmt"
+	"log"
 
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"golang.org/x/text/language"
@@ -15,7 +16,6 @@ import (
 //go:embed locales/*.json
 var localesFS embed.FS
 
-// Service управляет локализацией в приложении
 type Service struct {
 	bundle       *i18n.Bundle
 	localizers   map[string]*i18n.Localizer
@@ -23,17 +23,13 @@ type Service struct {
 	fallbackLang language.Tag
 }
 
-// Config для настройки i18n сервиса
 type Config struct {
-	DefaultLanguage  string   // "ru"
-	FallbackLanguage string   // "en"
-	SupportedLangs   []string // ["ru", "en"]
-	LocalesPath      string   // путь к файлам локализации
+	DefaultLanguage  string
+	FallbackLanguage string
+	SupportedLangs   []string
 }
 
-// NewService создаёт новый i18n сервис с конфигурацией
 func NewService(cfg Config) (*Service, error) {
-	// Парсим языковые теги
 	defaultLang, err := language.Parse(cfg.DefaultLanguage)
 	if err != nil {
 		return nil, fmt.Errorf("invalid default language %q: %w", cfg.DefaultLanguage, err)
@@ -44,9 +40,8 @@ func NewService(cfg Config) (*Service, error) {
 		return nil, fmt.Errorf("invalid fallback language %q: %w", cfg.FallbackLanguage, err)
 	}
 
-	// Создаём bundle с базовым языком
 	bundle := i18n.NewBundle(defaultLang)
-	bundle.RegisterUnmarshalFunc("json", json.Unmarshal) // Поддержка JSON
+	bundle.RegisterUnmarshalFunc("json", json.Unmarshal)
 
 	service := &Service{
 		bundle:       bundle,
@@ -55,9 +50,8 @@ func NewService(cfg Config) (*Service, error) {
 		fallbackLang: fallbackLang,
 	}
 
-	// Загружаем переводы для всех поддерживаемых языков
 	for _, lang := range cfg.SupportedLangs {
-		if err := service.loadLanguage(lang, cfg.LocalesPath); err != nil {
+		if err := service.loadLanguage(lang); err != nil {
 			return nil, fmt.Errorf("failed to load language %s: %w", lang, err)
 		}
 	}
@@ -65,30 +59,17 @@ func NewService(cfg Config) (*Service, error) {
 	return service, nil
 }
 
-// loadLanguage загружает переводы для конкретного языка
-func (s *Service) loadLanguage(langCode, localesPath string) error {
-	var filePath string
-	if localesPath == "" {
-		// Используем embedded файлы
-		filePath = fmt.Sprintf("locales/%s.json", langCode)
-		data, err := localesFS.ReadFile(filePath)
-		if err != nil {
-			return fmt.Errorf("failed to read embedded locale file %s: %w", filePath, err)
-		}
-
-		// Парсим и загружаем в bundle
-		if _, err := s.bundle.ParseMessageFileBytes(data, filePath); err != nil {
-			return fmt.Errorf("failed to parse locale file %s: %w", filePath, err)
-		}
-	} else {
-		// Загружаем из файловой системы
-		filePath = fmt.Sprintf("%s/%s.json", localesPath, langCode)
-		if _, err := s.bundle.LoadMessageFile(filePath); err != nil {
-			return fmt.Errorf("failed to load locale file %s: %w", filePath, err)
-		}
+func (s *Service) loadLanguage(langCode string) error {
+	filePath := fmt.Sprintf("locales/%s.json", langCode)
+	data, err := localesFS.ReadFile(filePath)
+	if err != nil {
+		return fmt.Errorf("failed to read embedded locale file %s: %w", filePath, err)
 	}
 
-	// Создаём локализатор для языка
+	if _, err := s.bundle.ParseMessageFileBytes(data, filePath); err != nil {
+		return fmt.Errorf("failed to parse locale file %s: %w", filePath, err)
+	}
+
 	langTag, err := language.Parse(langCode)
 	if err != nil {
 		return fmt.Errorf("invalid language code %s: %w", langCode, err)
@@ -98,18 +79,15 @@ func (s *Service) loadLanguage(langCode, localesPath string) error {
 	return nil
 }
 
-// GetLocalizer возвращает локализатор для языка пользователя
 func (s *Service) GetLocalizer(langCode string) *i18n.Localizer {
 	if localizer, exists := s.localizers[langCode]; exists {
 		return localizer
 	}
 
-	// Возвращаем fallback локализатор
 	return s.localizers[s.fallbackLang.String()]
 }
 
-// Localize переводит сообщение с параметрами
-func (s *Service) Localize(langCode, messageID string, templateData map[string]interface{}) string {
+func (s *Service) Localize(langCode, messageID string, templateData map[string]any) string {
 	localizer := s.GetLocalizer(langCode)
 
 	message, err := localizer.Localize(&i18n.LocalizeConfig{
@@ -118,19 +96,17 @@ func (s *Service) Localize(langCode, messageID string, templateData map[string]i
 	})
 
 	if err != nil {
-		// В случае ошибки возвращаем messageID как fallback
+		log.Print("Localization error: ", err)
 		return messageID
 	}
 
 	return message
 }
 
-// LocalizeSimple переводит простое сообщение без параметров
 func (s *Service) LocalizeSimple(langCode, messageID string) string {
 	return s.Localize(langCode, messageID, nil)
 }
 
-// LocalizePlural переводит сообщения с плюрализацией
 func (s *Service) LocalizePlural(langCode, messageID string, count int, templateData map[string]interface{}) string {
 	localizer := s.GetLocalizer(langCode)
 
@@ -152,7 +128,6 @@ func (s *Service) LocalizePlural(langCode, messageID string, count int, template
 	return message
 }
 
-// SupportedLanguages возвращает список поддерживаемых языков
 func (s *Service) SupportedLanguages() []string {
 	langs := make([]string, 0, len(s.localizers))
 	for lang := range s.localizers {

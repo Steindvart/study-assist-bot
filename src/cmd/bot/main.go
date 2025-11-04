@@ -18,20 +18,19 @@ func main() {
 		log.Fatalf("Failed to load config: %v", err)
 	}
 
-	i18nService, err := localization.NewService(localization.Config{
-		DefaultLanguage:  "ru",                 // Основной язык
-		FallbackLanguage: "en",                 // Fallback язык
-		SupportedLangs:   []string{"ru", "en"}, // Поддерживаемые языки
-		LocalesPath:      "",                   // Пустая строка = используем embedded файлы
+	localizationService, err := localization.NewService(localization.Config{
+		DefaultLanguage:  "ru",
+		FallbackLanguage: "en",
+		SupportedLangs:   []string{"ru", "en"},
 	})
+
 	if err != nil {
-		log.Fatalf("Failed to initialize i18n service: %v", err)
+		log.Fatalf("Failed to initialize localization service: %v", err)
 	}
 
-	// Создаём бота с i18n
 	bot, err := telegrambot.NewBot(telegrambot.Config{
-		Token:       cfg.TelegramToken,
-		I18nService: i18nService,
+		Token:               cfg.TelegramToken,
+		LocalizationService: localizationService,
 	})
 	if err != nil {
 		log.Fatalf("Failed to create bot: %v", err)
@@ -39,8 +38,6 @@ func main() {
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
-
-	log.Println("Bot is starting with i18n support...")
 
 	if err := bot.Start(ctx); err != nil {
 		log.Fatalf("Failed to start bot: %v", err)

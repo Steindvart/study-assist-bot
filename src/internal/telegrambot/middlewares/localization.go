@@ -2,28 +2,25 @@ package middlewares
 
 import (
 	"context"
-	"log"
 	"study-assist-tgbot/internal/localization"
 
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
-	goi18n "github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
-// LocalizationMiddleware обогащает контекст локализатором на основе языка пользователя
-type LocalizationMiddleware struct {
+const defaultLanguageCode = "en"
+
+type Localization struct {
 	service *localization.Service
 }
 
-// NewLocalizationMiddleware создаёт новый middleware для i18n
-func NewLocalizationMiddleware(service *localization.Service) *LocalizationMiddleware {
-	return &LocalizationMiddleware{
+func NewLocalization(service *localization.Service) *Localization {
+	return &Localization{
 		service: service,
 	}
 }
 
-// Handler - основной обработчик middleware
-func (m *LocalizationMiddleware) Handler(next bot.HandlerFunc) bot.HandlerFunc {
+func (m *Localization) Handler(next bot.HandlerFunc) bot.HandlerFunc {
 	return func(ctx context.Context, b *bot.Bot, update *models.Update) {
 		// Определяем язык пользователя
 		userLang := m.getUserLanguage(update)
@@ -34,15 +31,12 @@ func (m *LocalizationMiddleware) Handler(next bot.HandlerFunc) bot.HandlerFunc {
 		// Обогащаем контекст локализатором
 		ctx = localization.WithLocalizer(ctx, localizer)
 
-		// Передаём управление следующему обработчику
 		next(ctx, b, update)
 	}
 }
 
-// getUserLanguage определяет язык пользователя из обновления Telegram
-func (m *LocalizationMiddleware) getUserLanguage(update *models.Update) string {
+func (m *Localization) getUserLanguage(update *models.Update) string {
 	// Проверяем разные источники языка в порядке приоритета
-
 	// 1. Из сообщения пользователя
 	if update.Message != nil && update.Message.From != nil {
 		if langCode := update.Message.From.LanguageCode; langCode != "" {
@@ -60,23 +54,18 @@ func (m *LocalizationMiddleware) getUserLanguage(update *models.Update) string {
 		return m.normalizeLanguageCode(update.InlineQuery.From.LanguageCode)
 	}
 
-	// 4. Fallback на русский (ваш дефолтный язык)
-	return "ru"
+	return defaultLanguageCode
 }
 
-// normalizeLanguageCode нормализует код языка к поддерживаемому формату
-func (m *LocalizationMiddleware) normalizeLanguageCode(langCode string) string {
-	// Проверяем поддерживаемые языки
+func (m *Localization) normalizeLanguageCode(langCode string) string {
 	supportedLangs := m.service.SupportedLanguages()
 
-	// Точное совпадение
 	for _, supported := range supportedLangs {
 		if langCode == supported {
 			return langCode
 		}
 	}
 
-	// Проверяем первые два символа для языков типа "en-US" -> "en"
 	if len(langCode) >= 2 {
 		shortCode := langCode[:2]
 		for _, supported := range supportedLangs {
@@ -86,71 +75,5 @@ func (m *LocalizationMiddleware) normalizeLanguageCode(langCode string) string {
 		}
 	}
 
-	// Специальная обработка для русского языка
-	if langCode == "ru" || langCode == "ru-RU" {
-		return "ru"
-	}
-
-	// Специальная обработка для английского языка
-	if langCode == "en" || langCode[:2] == "en" {
-		return "en"
-	}
-
-	// Fallback на русский язык по умолчанию
-	return "ru"
-}
-
-// Helper функции для использования в handlers
-
-// GetMessage получает переведённое сообщение из контекста
-func GetMessage(ctx context.Context, messageID string, templateData map[string]interface{}) string {
-	localizer, ok := localization.FromContext(ctx)
-	if !ok {
-		// Fallback если локализатор не найден
-		return messageID
-	}
-
-	config := &goi18n.LocalizeConfig{
-		MessageID:    messageID,
-		TemplateData: templateData,
-	}
-
-	message, err := localizer.Localize(config)
-	if err != nil {
-		log.Fatal("Localization error: ", err)
-		return messageID
-	}
-
-	return message
-}
-
-// GetSimpleMessage получает простое переведённое сообщение без параметров
-func GetSimpleMessage(ctx context.Context, messageID string) string {
-	return GetMessage(ctx, messageID, nil)
-}
-
-// GetPluralMessage получает переведённое сообщение с плюрализацией
-func GetPluralMessage(ctx context.Context, messageID string, count int, templateData map[string]interface{}) string {
-	localizer, ok := localization.FromContext(ctx)
-	if !ok {
-		return messageID
-	}
-
-	if templateData == nil {
-		templateData = make(map[string]interface{})
-	}
-	templateData["Count"] = count
-
-	config := &goi18n.LocalizeConfig{
-		MessageID:    messageID,
-		PluralCount:  count,
-		TemplateData: templateData,
-	}
-
-	message, err := localizer.Localize(config)
-	if err != nil {
-		return messageID
-	}
-
-	return message
+	return defaultLanguageCode
 }

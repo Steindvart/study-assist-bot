@@ -3,7 +3,7 @@ package handlers
 import (
 	"context"
 	"fmt"
-	"study-assist-tgbot/internal/telegrambot/middlewares"
+	"study-assist-tgbot/internal/localization"
 
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
@@ -31,7 +31,7 @@ func CommandStart(ctx context.Context, b *bot.Bot, update *models.Update) {
 	}
 
 	// Получаем локализованное приветствие
-	welcomeText := middlewares.GetSimpleMessage(ctx, "welcome_message")
+	welcomeText := localization.GetSimpleText(ctx, "welcome_message")
 
 	b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID: update.Message.Chat.ID,
@@ -46,7 +46,7 @@ func CommandHelp(ctx context.Context, b *bot.Bot, update *models.Update) {
 	}
 
 	// Получаем локализованную справку
-	helpText := middlewares.GetSimpleMessage(ctx, "help_message")
+	helpText := localization.GetSimpleText(ctx, "help_message")
 
 	b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID: update.Message.Chat.ID,
@@ -77,7 +77,7 @@ func CommandLanguage(ctx context.Context, b *bot.Bot, update *models.Update) {
 	}
 
 	// Получаем локализованное сообщение выбора языка
-	selectText := middlewares.GetSimpleMessage(ctx, "language_selection")
+	selectText := localization.GetSimpleText(ctx, "language_selection")
 
 	b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID:      update.Message.Chat.ID,
@@ -104,7 +104,7 @@ func HandleLanguageCallback(ctx context.Context, b *bot.Bot, update *models.Upda
 	}
 
 	// Получаем локализованное сообщение подтверждения
-	confirmText := middlewares.GetMessage(ctx, "language_changed", map[string]interface{}{
+	confirmText := localization.GetText(ctx, "language_changed", map[string]interface{}{
 		"Language": langName,
 	})
 
@@ -134,10 +134,10 @@ func CommandTest(ctx context.Context, b *bot.Bot, update *models.Update) {
 
 	// Пример использования плюрализации
 	testCount := 5
-	testText := middlewares.GetPluralMessage(ctx, "tests_passed_plural", testCount, nil)
+	testText := localization.GetPluralText(ctx, "tests_passed_plural", testCount, nil)
 
 	// Пример использования с параметрами
-	resultText := middlewares.GetMessage(ctx, "test_completed", map[string]interface{}{
+	resultText := localization.GetText(ctx, "test_completed", map[string]interface{}{
 		"Score": 8,
 		"Total": 10,
 	})

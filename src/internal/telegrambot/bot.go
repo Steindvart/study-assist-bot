@@ -11,20 +11,20 @@ import (
 )
 
 type Bot struct {
-	api         *bot.Bot
-	i18nService *localization.Service
+	api          *bot.Bot
+	localization *localization.Service
 }
 
 type Config struct {
-	Token       string
-	I18nService *localization.Service
+	Token               string
+	LocalizationService *localization.Service
 }
 
 func NewBot(cfg Config) (*Bot, error) {
-	i18nMiddleware := middlewares.NewLocalizationMiddleware(cfg.I18nService)
+	localizationMiddleware := middlewares.NewLocalization(cfg.LocalizationService)
 
 	opts := []bot.Option{
-		bot.WithMiddlewares(i18nMiddleware.Handler, middlewares.LogMessageWithText),
+		bot.WithMiddlewares(localizationMiddleware.Handler, middlewares.LogMessageWithText),
 
 		bot.WithMessageTextHandler("start", bot.MatchTypeCommand, handlers.CommandStart),
 		bot.WithMessageTextHandler("help", bot.MatchTypeCommand, handlers.CommandHelp),
@@ -42,15 +42,15 @@ func NewBot(cfg Config) (*Bot, error) {
 	}
 
 	return &Bot{
-		api:         b,
-		i18nService: cfg.I18nService,
+		api:          b,
+		localization: cfg.LocalizationService,
 	}, nil
 }
 
 // Start запускает бота в polling режиме
 func (b *Bot) Start(ctx context.Context) error {
 	log.Println("Starting Telegram bot...")
-	log.Printf("Supported languages: %v", b.i18nService.SupportedLanguages())
+	log.Printf("Supported languages: %v", b.localization.SupportedLanguages())
 
 	b.api.Start(ctx)
 
