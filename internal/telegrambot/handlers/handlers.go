@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"study-assist-tgbot/internal/localization"
+	"study-assist-tgbot/internal/repositories"
 
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
@@ -82,15 +83,26 @@ func HandleLanguageCallback(ctx context.Context, b *bot.Bot, update *models.Upda
 		return
 	}
 
-	var langName string
+	var langCode, langName string
 
 	switch update.CallbackQuery.Data {
 	case "set_lang_ru":
+		langCode = "ru"
 		langName = "русский"
 	case "set_lang_en":
+		langCode = "en"
 		langName = "English"
 	default:
 		return
+	}
+
+	userRepo, ok := repositories.GetUserRepository(ctx)
+	if ok {
+		telegramID := update.CallbackQuery.From.ID
+		_, err := userRepo.UpsertLanguage(ctx, telegramID, langCode)
+		if err != nil {
+			fmt.Printf("Failed to save language preference for user %d: %v\n", telegramID, err)
+		}
 	}
 
 	confirmText := localization.GetText(ctx, "language_changed", map[string]interface{}{
@@ -108,9 +120,6 @@ func HandleLanguageCallback(ctx context.Context, b *bot.Bot, update *models.Upda
 		MessageID: update.CallbackQuery.Message.Message.ID,
 		Text:      confirmText,
 	})
-
-	// В реальном приложении здесь нужно сохранить выбор языка в базу данных
-	// для персистентности между сессиями
 }
 
 func CommandTest(ctx context.Context, b *bot.Bot, update *models.Update) {

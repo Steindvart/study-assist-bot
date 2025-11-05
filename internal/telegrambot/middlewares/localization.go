@@ -2,7 +2,9 @@ package middlewares
 
 import (
 	"context"
+	"log"
 	"study-assist-tgbot/internal/localization"
+	"study-assist-tgbot/internal/repositories"
 
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
@@ -11,18 +13,20 @@ import (
 const defaultLanguageCode = "en"
 
 type Localization struct {
-	service *localization.Service
+	service        *localization.Service
+	userRepository repositories.UserRepository
 }
 
-func NewLocalization(service *localization.Service) *Localization {
+func NewLocalization(service *localization.Service, userRepository repositories.UserRepository) *Localization {
 	return &Localization{
-		service: service,
+		service:        service,
+		userRepository: userRepository,
 	}
 }
 
 func (m *Localization) Handler(next bot.HandlerFunc) bot.HandlerFunc {
 	return func(ctx context.Context, b *bot.Bot, update *models.Update) {
-		userLang := m.getUserLanguage(update)
+		userLang := m.getUserLanguage(ctx, update)
 		localizer := m.service.GetLocalizer(userLang)
 		ctx = localization.WithLocalizer(ctx, localizer)
 
@@ -30,26 +34,65 @@ func (m *Localization) Handler(next bot.HandlerFunc) bot.HandlerFunc {
 	}
 }
 
-func (m *Localization) getUserLanguage(update *models.Update) string {
-	// Проверяем разные источники языка в порядке приоритета
-	// 1. Из сообщения пользователя
-	if update.Message != nil && update.Message.From != nil {
-		if langCode := update.Message.From.LanguageCode; langCode != "" {
-			return m.normalizeLanguageCode(langCode)
+func (m *Localization) getUserLanguage(ctx context.Context, update *models.Update) string {
+	telegramID := m.getTelegramID(update)
+	if telegramID == 0 {
+		return defaultLanguageCode
+	}
+
+	user, err := m.userRepository.GetByTelegramID(ctx, telegramID)
+	if err != nil {
+		log.Printf("Failed to get user from database: %v", err)
+	} else if user != nil {
+		return user.LanguageCode
+	}
+
+	telegramLang := m.getTelegramLanguage(update)
+	if telegramLang != "" {
+		normalizedLang := m.normalizeLanguageCode(telegramLang)
+
+		_, err := m.userRepository.UpsertLanguage(ctx, telegramID, normalizedLang)
+		if err != nil {
+			log.Printf("Failed to upsert user language: %v", err)
 		}
-	}
 
-	// 2. Из callback query
-	if update.CallbackQuery != nil && update.CallbackQuery.From.LanguageCode != "" {
-		return m.normalizeLanguageCode(update.CallbackQuery.From.LanguageCode)
-	}
-
-	// 3. Из inline query
-	if update.InlineQuery != nil && update.InlineQuery.From.LanguageCode != "" {
-		return m.normalizeLanguageCode(update.InlineQuery.From.LanguageCode)
+		return normalizedLang
 	}
 
 	return defaultLanguageCode
+}
+
+func (m *Localization) getTelegramID(update *models.Update) int64 {
+	if update.Message != nil && update.Message.From != nil {
+		return update.Message.From.ID
+	}
+	if update.CallbackQuery != nil {
+		return update.CallbackQuery.From.ID
+	}
+	if update.InlineQuery != nil {
+		return update.InlineQuery.From.ID
+	}
+	return 0
+}
+
+func (m *Localization) getTelegramLanguage(update *models.Update) string {
+	// Проверяем разные источники языка в порядке приоритета
+	// 1. Из сообщения пользователя
+	if update.Message != nil && update.Message.From != nil {
+		return update.Message.From.LanguageCode
+	}
+
+	// 2. Из callback query
+	if update.CallbackQuery != nil {
+		return update.CallbackQuery.From.LanguageCode
+	}
+
+	// 3. Из inline query
+	if update.InlineQuery != nil {
+		return update.InlineQuery.From.LanguageCode
+	}
+
+	return ""
 }
 
 func (m *Localization) normalizeLanguageCode(langCode string) string {
