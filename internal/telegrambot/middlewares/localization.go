@@ -76,18 +76,14 @@ func (m *Localization) getTelegramID(update *models.Update) int64 {
 }
 
 func (m *Localization) getTelegramLanguage(update *models.Update) string {
-	// Проверяем разные источники языка в порядке приоритета
-	// 1. Из сообщения пользователя
 	if update.Message != nil && update.Message.From != nil {
 		return update.Message.From.LanguageCode
 	}
 
-	// 2. Из callback query
 	if update.CallbackQuery != nil {
 		return update.CallbackQuery.From.LanguageCode
 	}
 
-	// 3. Из inline query
 	if update.InlineQuery != nil {
 		return update.InlineQuery.From.LanguageCode
 	}
