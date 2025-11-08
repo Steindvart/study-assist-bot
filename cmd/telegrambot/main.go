@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -21,7 +22,7 @@ func main() {
 		log.Fatalf("Failed to load config: %v", err)
 	}
 
-	db, err := database.New(cfg.Database)
+	db, err := initializeDataBase(cfg.Database)
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
@@ -30,10 +31,6 @@ func main() {
 			log.Printf("Error closing database: %v", err)
 		}
 	}()
-
-	if err := db.DB().AutoMigrate(&models.User{}); err != nil {
-		log.Fatalf("Failed to run auto-migration: %v", err)
-	}
 
 	log.Println("Database auto-migration completed successfully")
 
@@ -66,4 +63,17 @@ func main() {
 	}
 
 	log.Println("Bot stopped gracefully")
+}
+
+func initializeDataBase(cfg database.Config) (*database.Database, error) {
+	db, err := database.New(cfg)
+	if err != nil {
+		return nil, fmt.Errorf("failed to connect to database: %v", err)
+	}
+
+	if err := db.DB().AutoMigrate(&models.User{}); err != nil {
+		return nil, fmt.Errorf("failed to run auto-migration: %v", err)
+	}
+
+	return db, nil
 }
