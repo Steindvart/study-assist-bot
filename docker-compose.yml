@@ -22,7 +22,7 @@ services:
       retries: 5
       start_period: 30s
 
-  # Для разработки - pgAdmin веб-интерфейс (опционально)
+  # For development - pgAdmin web interface (optional)
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: study_assist_pgadmin
@@ -39,7 +39,7 @@ services:
         condition: service_healthy
     restart: unless-stopped
     profiles:
-      - dev  # Запускается только при использовании профиля dev
+      - dev
 
 volumes:
   postgres_data:
@@ -47,7 +47,6 @@ volumes:
   pgadmin_data:
     driver: local
 
-# Сетевая конфигурация для изоляции сервисов
 networks:
   default:
     name: study_assist_network
