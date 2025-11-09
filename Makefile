@@ -16,10 +16,10 @@ build:
 	go build -v -o bin/telegram-bot.exe ./cmd/bot
 
 run:
-	go run ./cmd/bot/main.go
+	go run ./cmd/telegrambot/main.go
 
 run-with-db: db-up
-	go run ./cmd/bot/main.go
+	go run ./cmd/telegrambot/main.go
 
 # Database management
 db-up:
